@@ -1,17 +1,58 @@
-describe('fillRegistrationFormAndSubmit', () => {
+describe('Account creation - Test Cases', () => {
     const fillRegistrationFormAndSubmit = (firstName, lastName, email, password) => {
-        // Your implementation here
-        // This function could interact with the DOM or make network requests
-        // For simplicity in this example, it just returns the provided values
+        // Check if email is valid
+        if (email.trim() && !isValidEmail(email)) {
+            return 'Please enter a valid email address';
+        }
+
+        // email already exists
+        if (email === 'john.doe@example.com') {
+            return 'Email already exists';
+        }
+
+        // Check for empty fields
+        if (!firstName.trim() || !lastName.trim() || !email.trim() || !password.trim()) {
+            return 'This is a required field.';
+        }
+
         return {
             firstName,
             lastName,
             email,
             password
         };
-    };
 
-    it('Test 0 : Valid Registration', () => {
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    }
+
+    function checkPasswordStrength(password) {
+        password = password.trim();
+
+        // Count the number of different character classes present in the password
+        let classesCount = 0;
+        if (/[a-z]/.test(password)) classesCount++;
+        if (/[A-Z]/.test(password)) classesCount++;
+        if (/[0-9]/.test(password)) classesCount++;
+        if (/[^a-zA-Z0-9]/.test(password)) classesCount++;
+
+        // Check if the password meets the criteria
+        if (password.length > 8 && classesCount > 3) {
+            return 'Very Strong';
+        } else if (password.length > 8 && classesCount >= 3) {
+            return 'Strong';
+        } else if (password.length === 8 && classesCount >= 3) {
+            return 'Medium';
+        } else {
+            return 'Weak';
+        }
+    }
+
+    // Pass : All inputs are valid and correct
+    // Fail : Any invalid input
+    it('Test 0: Valid Registration', () => {
         const firstName = 'John';
         const lastName = 'Doe';
         const email = 'test1@example.com';
@@ -27,96 +68,70 @@ describe('fillRegistrationFormAndSubmit', () => {
         });
     });
 
-    it('Test 1: Password is strong', () => {
-        const firstName = 'Jane';
-        const lastName = 'Doe';
-        const email = 'jane.doe@example.com';
-        const password = 'StrongPassword123!';
-
-        const formValues = fillRegistrationFormAndSubmit(firstName, lastName, email, password);
-
-        expect(formValues).toEqual({
-            firstName: 'Jane',
-            lastName: 'Doe',
-            email: 'jane.doe@example.com',
-            password: 'StrongPassword123!'
-        });
+    // Pass : The input password matches the criteria for Very Strong
+    // Fail : If the input is not Very Strong
+    it('Test 1: Very Strong password', () => {
+        const password = '12qwasyx!"QW';
+        const user = fillRegistrationFormAndSubmit('John', 'Doe', 'test@example.com', password);
+        const strength = checkPasswordStrength(user.password);
+        expect(strength).toBe('Very Strong');
     });
 
-    describe('Test 2 : Error Handling for Required fields', () => {
-        const handleRequiredFieldsError = () => {
-
-            return true; // Assuming the error message exists in this case
-        };
-
-        it('checks if error message for required fields exists', () => {
-            const errorMessageExists = handleRequiredFieldsError();
-
-            expect(errorMessageExists).toBe(true);
-        });
+    // Pass : The input password matches the criteria for Strong
+    // Fail : If the input is not Strong
+    it('Test 2: Strong password', () => {
+        const password = '12qwasyx!"';
+        const user = fillRegistrationFormAndSubmit('John', 'Doe', 'test@example.com', password);
+        const strength = checkPasswordStrength(user.password);
+        expect(strength).toBe('Strong');
     });
 
-    it('Test 3: Invalid Email Format', () => {
+    // Pass : The input password matches the criteria for Medium
+    // Fail : If the input is not Medium
+    it('Test 3: Medium password', () => {
+        const password = '12qwasyX';
+        const user = fillRegistrationFormAndSubmit('John', 'Doe', 'test@example.com', password);
+        const strength = checkPasswordStrength(user.password);
+        expect(strength).toBe('Medium');
+    });
+
+    // Pass : The input password matches the criteria for Weak
+    // Fail : If the input is not Weak
+    it('Test 4: Weak password', () => {
+        const password = 'weak';
+        const user = fillRegistrationFormAndSubmit('John', 'Doe', 'test@example.com', password);
+        const strength = checkPasswordStrength(user.password);
+        expect(strength).toBe('Weak');
+    });
+
+    // Pass : If all the mandatory fields are filled
+    // Fail : If any mandatory fields is not filled
+    it('Test 5 : Error Handling for Required fields', () => {
+        const errorMessageExists = fillRegistrationFormAndSubmit('', '', '', '');
+        expect(errorMessageExists).toBe('This is a required field.');
+    });
+
+    // Pass : If the Email format is wrong (Expected failure)
+    // Fail : If the page doesn't return error message
+    it('Test 6 : Invalid Email Format', () => {
         const firstName = 'John';
         const lastName = 'Doe';
         const email = 'johndogmail.com'; // Invalid email format
         const password = '12qwasyx!"';
-
-        // Call the function and get the error message
         const errorMessage = fillRegistrationFormAndSubmit(firstName, lastName, email, password);
-
-        // Assert that the error message matches the expected error message
         expect(errorMessage).toBe('Please enter a valid email address');
     });
 
-
-// Mock the generateRandomString function
-    jest.mock('./utils', () => ({
-        generateRandomString: jest.fn().mockReturnValue('randomString')
-    }));
-
-    describe('Registration Form Tests', () => {
-        it('Test 1 : Weak Password', () => {
-            const mockElement = {
-                text: jest.fn().mockReturnValue('Error message: Minimum length of this field must be equal or greater than 8 symbols')
-            };
-
-            // Mocking document.querySelector
-            document.querySelector = jest.fn().mockReturnValue(mockElement);
-
-            const firstName = 'randomString';
-            const lastName = 'randomString';
-            const email = 'randomString@example.com';
-            const password = 'test';
-
-            // Call the function to test
-            fillRegistrationForm(firstName, lastName, email, password);
-
-            // Check if error messages indicate weak password
-            const errorMessages = [
-                'Minimum length of this field must be equal or greater than 8 symbols',
-                'Minimum of different classes of characters in password is 3'
-            ];
-
-            const elementText = mockElement.text();
-            const containsAnyMessage = errorMessages.some(message => elementText.includes(message));
-
-            expect(containsAnyMessage).toBe(true);
-        });
+    // Pass : If the email already exists
+    // Fail : If the page doesn't return error message
+    it('Test 7 : Existing Email', () => {
+        const firstName = 'Existing';
+        const lastName = 'User';
+        const email = 'john.doe@example.com';
+        const password = 'StrongPassword123!';
+        const errorMessage = fillRegistrationFormAndSubmit(firstName, lastName, email, password);
+        expect(errorMessage).toBe('Email already exists');
     });
 
-
-
-    it('Test 5 : Existing Email', () => {
-        const firstName = 'Existing'
-        const lastName = 'User'
-        const email = 'john.doe@example.com'
-        const password = 'StrongPassword123!'
-        const formValues = fillRegistrationFormAndSubmit(firstName, lastName, email, password);
-
-        const userFriendlyMessageExists = true; // Assume the message exists
-
-        expect(userFriendlyMessageExists).toBe(true);
     });
 
-});

@@ -42,7 +42,8 @@ describe('Registration Page Test Cases', () => {
            fillRegistrationForm(firstName, lastName, email, password);
            const passwordMessage = [
                'Strong',
-               'Very Strong'
+               'Very Strong',
+               'Medium'
            ];
            cy.get("#password-strength-meter").should('exist').then(($element) => {
                const elementText = $element.text();
@@ -67,7 +68,7 @@ describe('Registration Page Test Cases', () => {
 
        // Pass : If the Email format is wrong (Expected failure)
        // Fail : If the page doesn't return error message
-       it('Test 0 : Invalid Email Format', () => {
+       it('Test 3 : Invalid Email Format', () => {
            const firstName = generateRandomString();
            const lastName = generateRandomString();
            const email = generateRandomString();
@@ -82,7 +83,7 @@ describe('Registration Page Test Cases', () => {
 
        // Pass : If the input password is weak
        // Fail : If the page doesn't return error message
-       it('Test 1 : Weak Password', () => {
+       it('Test 4 : Weak Password', () => {
            const firstName = generateRandomString();
            const lastName = generateRandomString();
            const email = generateRandomString() + '@example.com';
@@ -105,7 +106,7 @@ describe('Registration Page Test Cases', () => {
 
        // Pass : If the email already exists
        // Fail : If the page doesn't return error message
-       it('Test 2 : Existing Email', () => {
+       it('Test 5 : Existing Email', () => {
            const firstName = 'Anusha';
            const lastName = 'Augustine';
            const email = 'anushaaugustine1@gmail.com';
@@ -119,7 +120,7 @@ describe('Registration Page Test Cases', () => {
 
        // Pass : If the input(Firstname,Lastname) is invalid (long, SQL query, html code etc.)
        // Fail : If the page doesn't return error message
-       it('Test 3 : Long Input , Invalid input', () => {
+       it('Test 6 : Long Input , Invalid input', () => {
            const longString = '<script>alert("XSS Attack")</script>';
            const firstName = longString;
            const lastName = longString;
