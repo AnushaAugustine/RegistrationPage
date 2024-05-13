@@ -1,3 +1,7 @@
+/*
+ * Author: Anusha Augustine
+ * Description: jest unit test for the signup page https://magento.softwaretestingboard.com/customer/account/create/
+ */
 describe('Account creation - Test Cases', () => {
     const fillRegistrationFormAndSubmit = (firstName, lastName, email, password) => {
         // Check if email is valid

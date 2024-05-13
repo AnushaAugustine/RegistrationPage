@@ -1,3 +1,8 @@
+/*
+ * Author: Anusha Augustine
+ * Description: cypress automation for the signup page https://magento.softwaretestingboard.com/customer/account/create/
+ */
+
 describe('Registration Page Test Cases', () => {
     beforeEach(() => {
         cy.visit('https://magento.softwaretestingboard.com/customer/account/create/')
